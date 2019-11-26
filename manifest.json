@@ -3,11 +3,9 @@
   "version": "1.0",
   "description": "Prevents netflix from autoplaying videos",
   "manifest_version": 2,
-  "content_scripts": [
-    {
-      "matches": ["https://www.netflix.com/browse"],
-      "js": ["index.js"]
-    }
-  ],
+  "content_scripts": [{
+    "matches": ["https://www.netflix.com/browse"],
+    "js": ["content.js"]
+  }],
   "permissions": ["activeTab", "webNavigation", "tabs"]
 }
