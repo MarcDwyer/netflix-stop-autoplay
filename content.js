@@ -16,7 +16,7 @@ function listener() {
   if (playableDivs.length) {
     for (let x = 0; x < playableDivs.length; x++) {
       const pDiv = playableDivs[x];
-      pDiv.addEventListener("transitionend", e => {
+      pDiv.addEventListener("transitionend", () => {
         const vid = pDiv.querySelector("video");
         pDiv.setAttribute("isStopped", true)
         if (vid) {
