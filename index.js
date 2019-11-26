@@ -11,16 +11,15 @@ function disableVideos() {
 }
 
 function listener() {
-  const playableDivs = document.querySelectorAll("div.slider-item");
+  const playableDivs = document.querySelectorAll("div.slider-item:not([isStopped=true])");
   console.log(playableDivs.length);
   if (playableDivs.length) {
     for (let x = 0; x < playableDivs.length; x++) {
       const pDiv = playableDivs[x];
-      if (pDiv.isStopped) continue
       pDiv.addEventListener("transitionend", e => {
         const vid = pDiv.querySelector("video");
+        pDiv.setAttribute("isStopped", true)
         if (vid) {
-          pDiv.isStopped = true
           vid.src = "";
         }
       });
