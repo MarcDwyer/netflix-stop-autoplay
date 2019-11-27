@@ -2,12 +2,11 @@ const notStr = ":not([isStopped=true])";
 
 function attachListener(ele: Array<Element>) {
   if (NodeList.prototype.isPrototypeOf(ele)) {
-    //@ts-ignore
     ele = [...ele];
   }
   for (let x = 0; x < ele.length; x++) {
     const pDiv = ele[x];
-    pDiv.addEventListener("transitionend", () => {
+    pDiv.addEventListener("transitionstart", () => {
       const vid = pDiv.querySelector("video");
       pDiv.setAttribute("isStopped", "true");
       if (vid) {

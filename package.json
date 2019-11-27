@@ -8,6 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@types/adm-zip": "^0.4.32",
+    "adm-zip": "^0.4.13",
     "typescript": "^3.5.3"
   },
   "repository": {
@@ -19,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/MarcDwyer/netflix-stop-autoplay/issues"
   },
-  "homepage": "https://github.com/MarcDwyer/netflix-stop-autoplay#readme"
+  "homepage": "https://github.com/MarcDwyer/netflix-stop-autoplay#readme",
+  "devDependencies": {
+    "bestzip": "^2.1.5"
+  }
 }
