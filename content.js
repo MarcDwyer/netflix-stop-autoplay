@@ -1,6 +1,5 @@
 function disableVideos() {
   const videos = document.querySelectorAll("video");
-
   if (videos.length) {
     for (let x = 0; x < videos.length; x++) {
       console.log(videos);
@@ -11,14 +10,16 @@ function disableVideos() {
 }
 
 function listener() {
-  const playableDivs = document.querySelectorAll("div.slider-item:not([isStopped=true])");
+  const playableDivs = document.querySelectorAll(
+    "div.slider-item:not([isStopped=true])"
+  );
   console.log(playableDivs.length);
   if (playableDivs.length) {
     for (let x = 0; x < playableDivs.length; x++) {
       const pDiv = playableDivs[x];
       pDiv.addEventListener("transitionend", () => {
         const vid = pDiv.querySelector("video");
-        pDiv.setAttribute("isStopped", true)
+        pDiv.setAttribute("isStopped", true);
         if (vid) {
           vid.src = "";
         }
@@ -28,17 +29,19 @@ function listener() {
 }
 const debounce = (func, dur) => {
   let timer;
-  return function () {
+  return function() {
     const ctx = this,
-      args = arguments
+      args = arguments;
 
-    clearTimeout(timer)
+    clearTimeout(timer);
     time = setTimeout(() => {
-      func.apply(ctx, args)
-    }, dur)
-  }
-}
+      func.apply(ctx, args);
+    }, dur);
+  };
+};
+// add listener to dom loaded
 setTimeout(disableVideos, 1500);
+
 listener();
 
-document.addEventListener("scroll", debounce(listener, 650))
+document.addEventListener("scroll", debounce(listener, 650));
