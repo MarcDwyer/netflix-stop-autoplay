@@ -1,0 +1,23 @@
+{
+  "name": "netflix-stop-autoplay",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "typescript": "^3.5.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcDwyer/netflix-stop-autoplay.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarcDwyer/netflix-stop-autoplay/issues"
+  },
+  "homepage": "https://github.com/MarcDwyer/netflix-stop-autoplay#readme"
+}
