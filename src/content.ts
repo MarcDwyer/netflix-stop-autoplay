@@ -1,6 +1,6 @@
 const notStr = ":not([isStopped=true])";
 
-function attachListener(ele: Array<Element> | NodeListOf<Element>) {
+function attachListener(ele: Array<Element>) {
   if (NodeList.prototype.isPrototypeOf(ele)) {
     //@ts-ignore
     ele = [...ele];
@@ -28,7 +28,7 @@ function initListener() {
 }
 function listenNewDivs() {
   const playableDivs = document.querySelectorAll(`div.slider-item${notStr}`);
-  attachListener(playableDivs);
+  attachListener([...playableDivs]);
 }
 const debounce = (func, dur) => {
   let timer;
