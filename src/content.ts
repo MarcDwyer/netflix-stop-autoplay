@@ -5,72 +5,10 @@ type EventPayload = {
   list: Element[] | NodeListOf<Element>;
   type: string;
 };
-const myEvents = {
-  addTransitionEvt: function(element: Element) {
-    element.addEventListener(TRANSITIONSTART, () => {
-      const vid = element.querySelector("video");
-      element.setAttribute("isStopped", "true");
-      if (vid) {
-        vid.src = "";
-      }
-    });
-  },
-  addClickEvt: function(element: Element) {
-    element.addEventListener(ONCLICK, () => {
-      console.log(this);
-      this.addTransitionEvt();
-    });
-  }
+type IMyEvents = {
+  addTransitionEvt(ele: Element): void;
+  addClickEvt(ele: Element): void;
 };
-
-const attachListeners = (payload: EventPayload[]) => {
-  for (let x = 0; x < payload.length; x++) {
-    const { list, type } = payload[x];
-    for (let j = 0; j < list.length; j++) {
-      const element = list[j];
-      switch (type) {
-        case TRANSITIONSTART:
-          myEvents.addTransitionEvt(element);
-          break;
-        case ONCLICK:
-          myEvents.addClickEvt(element);
-      }
-    }
-  }
-};
-
-function initListener() {
-  const billboard = document.querySelector(`.billboard`);
-
-  if (!billboard) return;
-  const payload: EventPayload[] = [
-    {
-      list: [billboard, ...document.querySelectorAll("div[class*='video']")],
-      type: TRANSITIONSTART
-    }
-  ];
-  attachListeners(payload);
-}
-function listenNewDivs() {
-  const playableDivs = getNewDivs("div.slider-item", true),
-    spanDivs = getNewDivs("span.handle");
-  const payload: EventPayload[] = [
-    {
-      list: [...playableDivs],
-      type: TRANSITIONSTART
-    },
-    {
-      list: [...spanDivs],
-      type: ONCLICK
-    }
-  ];
-  attachListeners(payload);
-}
-function getNewDivs(query: string, not?: boolean) {
-  const notStr = not ? ":not([isStopped=true])" : "";
-  return document.querySelectorAll(`${query + notStr}`);
-}
-
 const debounce = (func, dur) => {
   let timer;
   return function() {
@@ -83,7 +21,97 @@ const debounce = (func, dur) => {
     }, dur);
   };
 };
-initListener();
-listenNewDivs();
+function getNewDivs(query: string, not?: boolean): Element[] {
+  const notStr = not ? ":not([isStopped=true])" : "";
+  return [...document.querySelectorAll(`${query + notStr}`)];
+}
+class NetflixListener {
+  public myEvents: MyEvents;
+  constructor() {
+    this.myEvents = new MyEvents(this);
+  }
+  queries = {
+    getDivs: "div.slider-item",
+    getSpans: "span.handle",
+    getBillboard: ".billboard",
+    getVideos: "div[class*='video']"
+  };
+  attachListeners = (payload: EventPayload[]) => {
+    console.log(payload);
+    for (let x = 0; x < payload.length; x++) {
+      const { list, type } = payload[x];
+      for (let j = 0; j < list.length; j++) {
+        const element = list[j];
+        switch (type) {
+          case TRANSITIONSTART:
+            this.myEvents.addTransitionEvt(element);
+            break;
+          case ONCLICK:
+            this.myEvents.addClickEvt(element);
+        }
+      }
+    }
+  };
+  initListener = () => {
+    const { getBillboard, getVideos } = this.queries;
+    const billboard = document.querySelector(getBillboard);
 
-document.addEventListener("scroll", debounce(listenNewDivs, 650));
+    const payload: EventPayload[] = [
+      {
+        list: [billboard, ...document.querySelectorAll(getVideos)],
+        type: TRANSITIONSTART
+      }
+    ];
+    this.attachListeners(payload);
+  };
+  listenNewDivs = () => {
+    const { getDivs, getSpans } = this.queries;
+    const playableDivs = getNewDivs(getDivs, true),
+      spanDivs = getNewDivs(getSpans, true);
+    const payload: EventPayload[] = [
+      {
+        list: [...playableDivs],
+        type: TRANSITIONSTART
+      },
+      {
+        list: [...spanDivs],
+        type: ONCLICK
+      }
+    ];
+    this.attachListeners(payload);
+  };
+}
+class MyEvents {
+  public props: NetflixListener;
+  constructor(props) {
+    this.props = props;
+  }
+  addTransitionEvt(element: Element) {
+    element.addEventListener(TRANSITIONSTART, () => {
+      const vid = element.querySelector("video");
+      element.setAttribute("isStopped", "true");
+      if (vid) {
+        vid.src = "";
+      }
+    });
+  }
+  addClickEvt(element: Element) {
+    element.addEventListener(ONCLICK, () => {
+      const { getDivs } = this.props.queries;
+      const newDivs = getNewDivs(getDivs, true),
+        payload: EventPayload[] = [
+          {
+            list: newDivs,
+            type: TRANSITIONSTART
+          }
+        ];
+      this.props.attachListeners(payload);
+    });
+  }
+}
+
+const controlFlix = new NetflixListener();
+controlFlix.initListener();
+controlFlix.listenNewDivs();
+
+document.addEventListener("scroll", debounce(controlFlix.listenNewDivs, 650));
