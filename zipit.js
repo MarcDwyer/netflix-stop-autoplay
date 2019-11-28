@@ -2,9 +2,14 @@ const AdmZip = require("adm-zip");
 
 const zip = new AdmZip();
 
-const files = [{
+const files = [
+  {
     type: "file",
     directory: "manifest.json"
+  },
+  {
+    type: "file",
+    directory: "icon.png"
   },
   {
     type: "folder",
