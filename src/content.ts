@@ -37,7 +37,7 @@ class NetflixListener {
     getVideos: "div[class*='video']"
   };
   attachListeners = (payload: EventPayload[]) => {
-    console.log(payload);
+    if (!payload.length) return;
     for (let x = 0; x < payload.length; x++) {
       const { list, type } = payload[x];
       for (let j = 0; j < list.length; j++) {
@@ -87,10 +87,10 @@ class MyEvents {
     this.props = props;
   }
   addTransitionEvt(element: Element) {
-    element.addEventListener(TRANSITIONSTART, () => {
+    element.addEventListener(TRANSITIONSTART, e => {
       const vid = element.querySelector("video");
-      element.setAttribute("isStopped", "true");
       if (vid) {
+        element.setAttribute("isStopped", "true");
         vid.src = "";
       }
     });
@@ -98,14 +98,17 @@ class MyEvents {
   addClickEvt(element: Element) {
     element.addEventListener(ONCLICK, () => {
       const { getDivs } = this.props.queries;
-      const newDivs = getNewDivs(getDivs, true),
-        payload: EventPayload[] = [
-          {
-            list: newDivs,
-            type: TRANSITIONSTART
-          }
-        ];
-      this.props.attachListeners(payload);
+
+      setTimeout(() => {
+        const newDivs = getNewDivs(getDivs, true),
+          payload: EventPayload[] = [
+            {
+              list: newDivs,
+              type: TRANSITIONSTART
+            }
+          ];
+        this.props.attachListeners(payload);
+      }, 1000);
     });
   }
 }
