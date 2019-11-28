@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "zip": "node zipit"
   },
   "dependencies": {
     "@types/adm-zip": "^0.4.32",

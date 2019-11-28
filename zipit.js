@@ -2,8 +2,7 @@ const AdmZip = require("adm-zip");
 
 const zip = new AdmZip();
 
-const files = [
-  {
+const files = [{
     type: "file",
     directory: "manifest.json"
   },
@@ -24,4 +23,4 @@ files.forEach(file => {
   }
 });
 // zip.extractAllTo("stop-netflix-auto.zip", true);
-zip.writeZip("files.zip");
+zip.writeZip("netflixext.zip");
