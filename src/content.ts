@@ -47,6 +47,7 @@ class NetflixListener {
             this.myEvents.addTransitionEvt(element);
             break;
           case ONCLICK:
+            console.log("onlick called");
             this.myEvents.addClickEvt(element);
         }
       }
@@ -65,17 +66,12 @@ class NetflixListener {
     this.attachListeners(payload);
   };
   listenNewDivs = () => {
-    const { getDivs, getSpans } = this.queries;
-    const playableDivs = getNewDivs(getDivs, true),
-      spanDivs = getNewDivs(getSpans, true);
+    const { getDivs } = this.queries;
+    const playableDivs = getNewDivs(getDivs, true);
     const payload: EventPayload[] = [
       {
         list: [...playableDivs],
         type: TRANSITIONSTART
-      },
-      {
-        list: [...spanDivs],
-        type: ONCLICK
       }
     ];
     this.attachListeners(payload);
@@ -117,4 +113,7 @@ const controlFlix = new NetflixListener();
 controlFlix.initListener();
 controlFlix.listenNewDivs();
 
-document.addEventListener("scroll", debounce(controlFlix.listenNewDivs, 650));
+window.addEventListener(
+  "DOMNodeInserted",
+  debounce(controlFlix.listenNewDivs, 650)
+);
