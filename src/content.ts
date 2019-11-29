@@ -21,9 +21,13 @@ const debounce = (func, dur) => {
     }, dur);
   };
 };
-function getNewDivs(query: string, not?: boolean): Element[] {
+function getNewDivs(query: string, not?: boolean): Element[] | null {
   const notStr = not ? ":not([isStopped=true])" : "";
-  return [...document.querySelectorAll(`${query + notStr}`)];
+  const queryRes = document.querySelectorAll(`${query + notStr}`);
+  if (!queryRes.length) {
+    return null;
+  }
+  return [...queryRes];
 }
 class NetflixListener {
   public myEvents: MyEvents;
@@ -39,36 +43,21 @@ class NetflixListener {
   attachListeners = (payload: EventPayload[]) => {
     if (!payload.length) return;
     for (let x = 0; x < payload.length; x++) {
-      const { list, type } = payload[x];
+      const { list } = payload[x];
+      if (!list.length) return;
       for (let j = 0; j < list.length; j++) {
         const element = list[j];
-        switch (type) {
-          case TRANSITIONSTART:
-            this.myEvents.addTransitionEvt(element);
-            break;
-          case ONCLICK:
-            console.log("onlick called");
-            this.myEvents.addClickEvt(element);
-        }
+        this.myEvents.addTransitionEvt(element);
       }
     }
   };
-  initListener = () => {
-    const { getBillboard, getVideos } = this.queries;
-    const billboard = document.querySelector(getBillboard);
-
-    const payload: EventPayload[] = [
-      {
-        list: [billboard, ...document.querySelectorAll(getVideos)],
-        type: TRANSITIONSTART
-      }
-    ];
-    this.attachListeners(payload);
-  };
-  listenNewDivs = () => {
-    const { getDivs } = this.queries;
-    const playableDivs = getNewDivs(getDivs, true);
-    console.log("ran2");
+  listenNewMedia = () => {
+    const { getDivs, getBillboard, getVideos } = this.queries;
+    const playableDivs = getNewDivs(
+      `${getDivs},${getBillboard},${getVideos}`,
+      true
+    );
+    if (!playableDivs) return;
     const payload: EventPayload[] = [
       {
         list: [...playableDivs],
@@ -92,29 +81,13 @@ class MyEvents {
       }
     });
   }
-  addClickEvt(element: Element) {
-    element.addEventListener(ONCLICK, () => {
-      const { getDivs } = this.props.queries;
-
-      setTimeout(() => {
-        const newDivs = getNewDivs(getDivs, true),
-          payload: EventPayload[] = [
-            {
-              list: newDivs,
-              type: TRANSITIONSTART
-            }
-          ];
-        this.props.attachListeners(payload);
-      }, 1000);
-    });
-  }
 }
 
 const controlFlix = new NetflixListener();
-controlFlix.initListener();
-controlFlix.listenNewDivs();
+// controlFlix.initListener();
+controlFlix.listenNewMedia();
 
 window.addEventListener(
   "DOMNodeInserted",
-  debounce(controlFlix.listenNewDivs, 650)
+  debounce(controlFlix.listenNewMedia, 650)
 );
