@@ -68,6 +68,7 @@ class NetflixListener {
   listenNewDivs = () => {
     const { getDivs } = this.queries;
     const playableDivs = getNewDivs(getDivs, true);
+    console.log("ran2");
     const payload: EventPayload[] = [
       {
         list: [...playableDivs],
