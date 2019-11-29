@@ -21,23 +21,34 @@ const debounce = (func, dur) => {
     }, dur);
   };
 };
-function getNewDivs(query: string, not?: boolean): Element[] | null {
-  const notStr = not ? ":not([isStopped=true])" : "";
-  const queryRes = document.querySelectorAll(`${query + notStr}`);
-  if (!queryRes.length) {
+const getNewDivs = (query: string[], not?: boolean): Element[] | null => {
+  const notStr = not ? ":not([stopped=true])" : "";
+  let finalQuery = query
+    .map(q => {
+      return q + notStr;
+    })
+    .join(",");
+  // console.log(finalQuery);
+  const queryResult = document.querySelectorAll(finalQuery);
+  if (!queryResult.length) {
     return null;
   }
-  return [...queryRes];
-}
+  return [...queryResult];
+};
+const addTransitionEvt = (element: Element) => {
+  element.addEventListener(TRANSITIONSTART, e => {
+    const vid = element.querySelector("video");
+    if (vid) {
+      element.setAttribute("stopped", "true");
+      vid.src = "";
+    }
+  });
+};
 class NetflixListener {
-  public myEvents: MyEvents;
-  constructor() {
-    this.myEvents = new MyEvents(this);
-  }
   queries = {
     getDivs: "div.slider-item",
     getSpans: "span.handle",
-    getBillboard: ".billboard",
+    getBillboard: "div.billboard",
     getVideos: "div[class*='video']"
   };
   attachListeners = (payload: EventPayload[]) => {
@@ -47,16 +58,22 @@ class NetflixListener {
       if (!list.length) return;
       for (let j = 0; j < list.length; j++) {
         const element = list[j];
-        this.myEvents.addTransitionEvt(element);
+        // console.log(element.hasAttribute("stopped"));
+        addTransitionEvt(element);
       }
     }
   };
-  listenNewMedia = () => {
+  listenNewMedia = (e?: MutationEvent) => {
     const { getDivs, getBillboard, getVideos } = this.queries;
-    const playableDivs = getNewDivs(
-      `${getDivs},${getBillboard},${getVideos}`,
-      true
-    );
+    //@ts-ignore
+    if (
+      e &&
+      e.srcElement &&
+      //@ts-ignore
+      /image-rotator-image/g.test(e.srcElement.classList.value)
+    )
+      return;
+    const playableDivs = getNewDivs([getDivs, getBillboard, getVideos], true);
     if (!playableDivs) return;
     const payload: EventPayload[] = [
       {
@@ -67,24 +84,7 @@ class NetflixListener {
     this.attachListeners(payload);
   };
 }
-class MyEvents {
-  public props: NetflixListener;
-  constructor(props) {
-    this.props = props;
-  }
-  addTransitionEvt(element: Element) {
-    element.addEventListener(TRANSITIONSTART, e => {
-      const vid = element.querySelector("video");
-      if (vid) {
-        element.setAttribute("isStopped", "true");
-        vid.src = "";
-      }
-    });
-  }
-}
-
 const controlFlix = new NetflixListener();
-// controlFlix.initListener();
 controlFlix.listenNewMedia();
 
 window.addEventListener(
