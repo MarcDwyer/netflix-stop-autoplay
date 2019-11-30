@@ -9,6 +9,12 @@ type IMyEvents = {
   addTransitionEvt(ele: Element): void;
   addClickEvt(ele: Element): void;
 };
+type MyQueries = {
+  getDivs: string;
+  getSpans: string;
+  getBillboard: string;
+  getVideos: string;
+};
 const debounce = (func, dur) => {
   let timer;
   return function() {
@@ -45,12 +51,16 @@ const addTransitionEvt = (element: Element) => {
   });
 };
 class NetflixListener {
-  queries = {
-    getDivs: "div.slider-item",
-    getSpans: "span.handle",
-    getBillboard: "div.billboard",
-    getVideos: "div[class*='video']"
-  };
+  public queries: MyQueries;
+  constructor() {
+    this.queries = {
+      getDivs: "div.slider-item",
+      getSpans: "span.handle",
+      getBillboard: "div.billboard",
+      getVideos: "div[class*='video']"
+    };
+  }
+
   attachListeners = (payload: EventPayload[]) => {
     if (!payload.length) return;
     for (let x = 0; x < payload.length; x++) {
