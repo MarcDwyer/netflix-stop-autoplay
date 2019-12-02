@@ -1,9 +1,9 @@
-const TRANSITIONSTART = "transitionstart",
-  ONCLICK = "click";
+const NODEINSERTED = Symbol("newnode"),
+  ONCLICK = Symbol("click");
 
 type EventPayload = {
   list: Element[] | NodeListOf<Element>;
-  type: string;
+  type: Symbol;
 };
 type IMyEvents = {
   addTransitionEvt(ele: Element): void;
@@ -17,7 +17,7 @@ type MyQueries = {
 };
 const debounce = (func, dur) => {
   let timer;
-  return function() {
+  return function () {
     const ctx = this,
       args = arguments;
 
@@ -29,7 +29,7 @@ const debounce = (func, dur) => {
 };
 const getNewDivs = (query: string[], not?: boolean): Element[] | null => {
   const notStr = not ? ":not([stopped=true])" : "";
-  let finalQuery = query
+  const finalQuery = query
     .map(q => {
       return q + notStr;
     })
@@ -42,7 +42,7 @@ const getNewDivs = (query: string[], not?: boolean): Element[] | null => {
   return [...queryResult];
 };
 const addTransitionEvt = (element: Element) => {
-  element.addEventListener(TRANSITIONSTART, e => {
+  element.addEventListener("transitionstart", () => {
     const vid = element.querySelector("video");
     if (vid) {
       element.setAttribute("stopped", "true");
@@ -88,7 +88,7 @@ class NetflixListener {
     const payload: EventPayload[] = [
       {
         list: [...playableDivs],
-        type: TRANSITIONSTART
+        type: NODEINSERTED
       }
     ];
     this.attachListeners(payload);
