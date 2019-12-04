@@ -17,7 +17,7 @@ type MyQueries = {
 };
 const debounce = (func, dur) => {
   let timer;
-  return function () {
+  return function() {
     const ctx = this,
       args = arguments;
 
@@ -94,6 +94,7 @@ class NetflixListener {
     this.attachListeners(payload);
   };
 }
+console.log("hello?");
 const controlFlix = new NetflixListener();
 controlFlix.listenNewMedia();
 
