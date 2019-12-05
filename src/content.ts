@@ -15,7 +15,10 @@ type MyQueries = {
   getBillboard: string;
   getVideos: string;
 };
-const debounce = (func, dur) => {
+const debounce = (
+  func: Function,
+  dur: number
+): EventListenerOrEventListenerObject => {
   let timer;
   return function() {
     const ctx = this,
@@ -42,7 +45,7 @@ const getNewDivs = (query: string[], not?: boolean): Element[] | null => {
   return [...queryResult];
 };
 const addTransitionEvt = (element: Element) => {
-  element.addEventListener("transitionstart", () => {
+  element.addEventListener("transitionend", () => {
     const vid = element.querySelector("video");
     if (vid) {
       element.setAttribute("stopped", "true");
@@ -87,14 +90,13 @@ class NetflixListener {
     if (!playableDivs) return;
     const payload: EventPayload[] = [
       {
-        list: [...playableDivs],
+        list: playableDivs,
         type: NODEINSERTED
       }
     ];
     this.attachListeners(payload);
   };
 }
-console.log("hello?");
 const controlFlix = new NetflixListener();
 controlFlix.listenNewMedia();
 
