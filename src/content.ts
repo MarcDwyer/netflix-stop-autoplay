@@ -13,6 +13,7 @@ type MyQueries = {
   getDivs: string;
   getSpans: string;
   getBillboard: string;
+  subBillboard: string;
   getVideos: string;
 };
 const debounce = (
@@ -20,7 +21,7 @@ const debounce = (
   dur: number
 ): EventListenerOrEventListenerObject => {
   let timer;
-  return function() {
+  return function () {
     const ctx = this,
       args = arguments;
 
@@ -45,7 +46,7 @@ const getNewDivs = (query: string[], not?: boolean): Element[] | null => {
   return [...queryResult];
 };
 const addTransitionEvt = (element: Element) => {
-  element.addEventListener("transitionend", () => {
+  element.addEventListener("transitionstart", () => {
     const vid = element.querySelector("video");
     if (vid) {
       element.setAttribute("stopped", "true");
@@ -60,6 +61,7 @@ class NetflixListener {
       getDivs: "div.slider-item",
       getSpans: "span.handle",
       getBillboard: "div.billboard",
+      subBillboard: "div.billboard-row",
       getVideos: "div[class*='video']"
     };
   }
@@ -77,7 +79,6 @@ class NetflixListener {
     }
   };
   listenNewMedia = (e?: MutationEvent) => {
-    const { getDivs, getBillboard, getVideos } = this.queries;
     //@ts-ignore
     if (
       e &&
@@ -86,7 +87,7 @@ class NetflixListener {
       /image-rotator-image/g.test(e.srcElement.classList.value)
     )
       return;
-    const playableDivs = getNewDivs([getDivs, getBillboard, getVideos], true);
+    const playableDivs = getNewDivs(Object.values(this.queries), true);
     if (!playableDivs) return;
     const payload: EventPayload[] = [
       {
