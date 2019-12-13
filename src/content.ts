@@ -101,7 +101,7 @@ class NetflixListener {
 const controlFlix = new NetflixListener();
 controlFlix.listenNewMedia();
 
-window.addEventListener(
+document.addEventListener(
   "DOMNodeInserted",
   debounce(controlFlix.listenNewMedia, 650)
 );
