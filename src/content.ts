@@ -10,18 +10,18 @@ type IMyEvents = {
   addClickEvt(ele: Element): void;
 };
 type MyQueries = {
-  getDivs: string;
-  getSpans: string;
-  getBillboard: string;
-  subBillboard: string;
-  getVideos: string;
+  getDivs?: string;
+  getSpans?: string;
+  getBillboard?: string;
+  subBillboard?: string;
+  getVideos?: string;
 };
 const debounce = (
   func: Function,
   dur: number
 ): EventListenerOrEventListenerObject => {
   let timer;
-  return function () {
+  return function() {
     const ctx = this,
       args = arguments;
 
@@ -31,17 +31,12 @@ const debounce = (
     }, dur);
   };
 };
-const getNewDivs = (query: string[], not?: boolean): Element[] | null => {
-  const notStr = not ? ":not([stopped=true])" : "";
-  const finalQuery = query
-    .map(q => {
-      return q + notStr;
-    })
-    .join(",");
-  // console.log(finalQuery);
-  const queryResult = document.querySelectorAll(finalQuery);
+const getNewDivs = (query: string, not?: boolean): Element[] => {
+  query = not ? query + ":not([stopped=true])" : query;
+
+  const queryResult = document.querySelectorAll(query);
   if (!queryResult.length) {
-    return null;
+    return [];
   }
   return [...queryResult];
 };
@@ -66,16 +61,11 @@ class NetflixListener {
     };
   }
 
-  attachListeners = (payload: EventPayload[]) => {
+  attachListeners = (payload: Element[]) => {
     if (!payload.length) return;
-    for (let x = 0; x < payload.length; x++) {
-      const { list } = payload[x];
-      if (!list.length) return;
-      for (let j = 0; j < list.length; j++) {
-        const element = list[j];
-        // console.log(element.hasAttribute("stopped"));
-        addTransitionEvt(element);
-      }
+    for (const ele of payload) {
+      console.log(ele.getAttribute("stopped"));
+      addTransitionEvt(ele);
     }
   };
   listenNewMedia = (e?: MutationEvent) => {
@@ -87,15 +77,14 @@ class NetflixListener {
       /image-rotator-image/g.test(e.srcElement.classList.value)
     )
       return;
-    const playableDivs = getNewDivs(Object.values(this.queries), true);
+    const playableDivs = Object.values(this.queries);
+    const queryResults = playableDivs
+      .map(divStr => getNewDivs(divStr, true))
+      //@ts-ignore
+      .flat(Infinity);
+    // console.log(queryResults);
     if (!playableDivs) return;
-    const payload: EventPayload[] = [
-      {
-        list: playableDivs,
-        type: NODEINSERTED
-      }
-    ];
-    this.attachListeners(payload);
+    this.attachListeners(queryResults);
   };
 }
 const controlFlix = new NetflixListener();
