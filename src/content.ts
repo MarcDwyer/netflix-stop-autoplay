@@ -21,7 +21,7 @@ const debounce = (
   dur: number
 ): EventListenerOrEventListenerObject => {
   let timer;
-  return function() {
+  return function () {
     const ctx = this,
       args = arguments;
 
@@ -41,10 +41,10 @@ const getNewDivs = (query: string, not?: boolean): Element[] => {
   return [...queryResult];
 };
 const addTransitionEvt = (element: Element) => {
+  element.setAttribute("stopped", "true");
   element.addEventListener("transitionstart", () => {
     const vid = element.querySelector("video");
     if (vid) {
-      element.setAttribute("stopped", "true");
       vid.src = "";
     }
   });
@@ -64,7 +64,6 @@ class NetflixListener {
   attachListeners = (payload: Element[]) => {
     if (!payload.length) return;
     for (const ele of payload) {
-      console.log(ele.getAttribute("stopped"));
       addTransitionEvt(ele);
     }
   };
@@ -82,7 +81,6 @@ class NetflixListener {
       .map(divStr => getNewDivs(divStr, true))
       //@ts-ignore
       .flat(Infinity);
-    // console.log(queryResults);
     if (!playableDivs) return;
     this.attachListeners(queryResults);
   };
