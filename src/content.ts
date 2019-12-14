@@ -3,7 +3,7 @@ const debounce = (
   dur: number
 ): EventListenerOrEventListenerObject => {
   let timer;
-  return function () {
+  return function() {
     const ctx = this,
       args = arguments;
 
@@ -29,7 +29,14 @@ const addTransitionEvt = (element: Element) => {
   });
 };
 
-const queries = ["div.slider-item", "span.handle", "div.billboard", "div.billboard-row", "div[class*='video']", "div.background"]
+const queries = [
+  "div.slider-item",
+  "span.handle",
+  "div.billboard",
+  "div.billboard-row",
+  "div[class*='video']",
+  "div.background"
+];
 
 const listenNewMedia = (e?: MutationEvent) => {
   //@ts-ignore
@@ -44,13 +51,10 @@ const listenNewMedia = (e?: MutationEvent) => {
     .map(divStr => getNewDivs(divStr, true))
     //@ts-ignore
     .flat(Infinity);
-  if (!queryResults.length) return
+  if (!queryResults.length) return;
   for (const ele of queryResults) {
-    addTransitionEvt(ele)
+    addTransitionEvt(ele);
   }
 };
-listenNewMedia()
-document.addEventListener(
-  "DOMNodeInserted",
-  debounce(listenNewMedia, 650)
-);
+listenNewMedia();
+document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 650));
