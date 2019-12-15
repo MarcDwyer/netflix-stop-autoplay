@@ -13,11 +13,14 @@ const debounce = (
     }, dur);
   };
 };
-const getNewDivs = (query: string, not?: boolean): Element[] => {
-  query = not ? query + ":not([stopped=true])" : query;
-
-  const queryResult = document.querySelectorAll(query);
-  return [...queryResult];
+const findElements = (queries: string[]): Element[] => {
+  const not = ":not([stopped=true])";
+  const result = [];
+  for (const query of queries) {
+    result.push([...document.querySelectorAll(query + not)]);
+  }
+  //@ts-ignore
+  return result.flat(Infinity);
 };
 const addTransitionEvt = (element: Element) => {
   element.setAttribute("stopped", "true");
@@ -28,18 +31,20 @@ const addTransitionEvt = (element: Element) => {
     }
   });
 };
+const billBoardQueries = ["div.billboard", "div.billboard-row"];
 
 const queries = [
   "div.slider-item",
-  "span.handle",
-  "div.billboard",
-  "div.billboard-row",
+  // "span.handle",
   "div[class*='video']",
   "div.background"
 ];
-
+const attachListeners = (elements: Element[]) => {
+  for (const ele of elements) {
+    addTransitionEvt(ele);
+  }
+};
 const listenNewMedia = (e?: MutationEvent) => {
-  //@ts-ignore
   if (
     e &&
     e.srcElement &&
@@ -47,13 +52,7 @@ const listenNewMedia = (e?: MutationEvent) => {
     /image-rotator-image/g.test(e.srcElement.classList.value)
   )
     return;
-  const queryResults = queries
-    .map(divStr => getNewDivs(divStr, true))
-    //@ts-ignore
-    .flat(Infinity);
-  for (const ele of queryResults) {
-    addTransitionEvt(ele);
-  }
+  const queryResults = findElements([...queries, ...billBoardQueries]);
+  attachListeners(queryResults);
 };
-listenNewMedia();
 document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 650));
