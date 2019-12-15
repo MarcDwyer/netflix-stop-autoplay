@@ -51,7 +51,6 @@ const listenNewMedia = (e?: MutationEvent) => {
     .map(divStr => getNewDivs(divStr, true))
     //@ts-ignore
     .flat(Infinity);
-  if (!queryResults.length) return;
   for (const ele of queryResults) {
     addTransitionEvt(ele);
   }
