@@ -13,10 +13,10 @@ const debounce = (
     }, dur);
   };
 };
-type FindElements = {
+type SetQueries = {
   (): Element[];
 };
-const findElements = (queries: string[]): FindElements => {
+const setQueries = (queries: string[]): SetQueries => {
   const not = ":not([stopped=true])";
   const getQueries = [];
   for (const query of queries) {
@@ -32,7 +32,7 @@ const findElements = (queries: string[]): FindElements => {
     return results;
   };
 };
-const addTransitionEvts = (getNodes: FindElements) => {
+const addTransitionEvts = (getNodes: SetQueries) => {
   for (const node of getNodes()) {
     node.setAttribute("stopped", "true");
     node.addEventListener("transitionstart", () => {
@@ -58,7 +58,7 @@ const listenNewMedia = (e?: MutationEvent) => {
     /image-rotator-image/g.test(e.srcElement.classList.value)
   )
     return;
-  const getNodes = findElements([...queries, ...billBoardQueries]);
+  const getNodes = setQueries([...queries, ...billBoardQueries]);
   addTransitionEvts(getNodes);
 };
 document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
