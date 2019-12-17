@@ -1,3 +1,15 @@
+const queries = {
+  billBoardQueries: ["div.billboard", "div.billboard-row"],
+  regQueries: [
+    "div.slider-item",
+    // "span.handle",
+    "div[class*='video']",
+    "div.background"
+  ],
+  profileScreen: "div.list-profiles",
+  profileCards: "div.profile-icon"
+};
+
 const debounce = (
   func: Function,
   dur: number
@@ -43,13 +55,12 @@ const addTransitionEvts = (getNodes: SetQueries) => {
     });
   }
 };
-const billBoardQueries = ["div.billboard", "div.billboard-row"],
-  queries = [
-    "div.slider-item",
-    // "span.handle",
-    "div[class*='video']",
-    "div.background"
-  ];
+const nukeBillboard = (profileEle: Element) => {
+  const profileCards = profileEle.querySelectorAll(queries.profileCards);
+  for (const card of profileCards) {
+    card.addEventListener("click", () => setTimeout(listenNewMedia, 450));
+  }
+};
 const listenNewMedia = (e?: MutationEvent) => {
   if (
     e &&
@@ -58,7 +69,13 @@ const listenNewMedia = (e?: MutationEvent) => {
     /image-rotator-image/g.test(e.srcElement.classList.value)
   )
     return;
-  const getNodes = setQueries([...queries, ...billBoardQueries]);
+  const { regQueries, billBoardQueries, profileScreen } = queries;
+  const checkProfile = document.querySelector(profileScreen);
+  if (checkProfile) {
+    nukeBillboard(checkProfile);
+    return;
+  }
+  const getNodes = setQueries([...regQueries, ...billBoardQueries]);
   addTransitionEvts(getNodes);
 };
 document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
