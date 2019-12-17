@@ -79,4 +79,4 @@ const listenNewMedia = (e?: MutationEvent) => {
   addTransitionEvts(getNodes);
 };
 listenNewMedia();
-document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
+document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 350));
