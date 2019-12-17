@@ -32,14 +32,16 @@ const findElements = (queries: string[]): FindElements => {
     return results;
   };
 };
-const addTransitionEvt = (element: Element) => {
-  element.setAttribute("stopped", "true");
-  element.addEventListener("transitionstart", () => {
-    const vid = element.querySelector("video");
-    if (vid) {
-      vid.src = "";
-    }
-  });
+const addTransitionEvts = (getNodes: FindElements) => {
+  for (const node of getNodes()) {
+    node.setAttribute("stopped", "true");
+    node.addEventListener("transitionstart", () => {
+      const vid = node.querySelector("video");
+      if (vid) {
+        vid.src = "";
+      }
+    });
+  }
 };
 const billBoardQueries = ["div.billboard", "div.billboard-row"],
   queries = [
@@ -57,8 +59,6 @@ const listenNewMedia = (e?: MutationEvent) => {
   )
     return;
   const getNodes = findElements([...queries, ...billBoardQueries]);
-  for (const node of getNodes()) {
-    addTransitionEvt(node);
-  }
+  addTransitionEvts(getNodes);
 };
 document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
