@@ -78,4 +78,5 @@ const listenNewMedia = (e?: MutationEvent) => {
   const getNodes = setQueries([...regQueries, ...billBoardQueries]);
   addTransitionEvts(getNodes);
 };
+listenNewMedia();
 document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
