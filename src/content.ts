@@ -28,24 +28,17 @@ const debounce = (
 type SetQueries = {
   (): Element[];
 };
-const setQueries = (queries: string[]): SetQueries => {
+const getQueryList = (queries: string[]): Element[] => {
   const not = ":not([stopped=true])";
-  const getQueries = [];
+  const autoPlayingEle: Element[] = [];
   for (const query of queries) {
-    getQueries.push(() => {
-      return document.querySelectorAll(query + not);
-    });
+    autoPlayingEle.push(...document.querySelectorAll(query + not));
   }
-  return () => {
-    const results = [];
-    for (const getQuery of getQueries) {
-      results.push(...getQuery());
-    }
-    return results;
-  };
+  console.log(autoPlayingEle);
+  return autoPlayingEle;
 };
-const addTransitionEvts = (getNodes: SetQueries) => {
-  for (const node of getNodes()) {
+const addTransitionEvts = (nodes: Element[]) => {
+  for (const node of nodes) {
     node.setAttribute("stopped", "true");
     node.addEventListener("transitionstart", () => {
       const vid = node.querySelector("video");
@@ -75,8 +68,8 @@ const listenNewMedia = (e?: MutationEvent) => {
     nukeBillboard(checkProfile);
     return;
   }
-  const getNodes = setQueries([...regQueries, ...billBoardQueries]);
-  addTransitionEvts(getNodes);
+  const nodes = getQueryList([...regQueries, ...billBoardQueries]);
+  addTransitionEvts(nodes);
 };
 listenNewMedia();
 document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
