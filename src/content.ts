@@ -30,12 +30,12 @@ type SetQueries = {
 };
 const getQueryList = (queries: string[]): Element[] => {
   const not = ":not([stopped=true])";
-  const autoPlayingEle: Element[] = [];
+  const results: Element[] = [];
   for (const query of queries) {
-    autoPlayingEle.push(...document.querySelectorAll(query + not));
+    results.push(...document.querySelectorAll(query + not));
   }
-  console.log(autoPlayingEle);
-  return autoPlayingEle;
+  console.log(results);
+  return results;
 };
 const addTransitionEvts = (nodes: Element[]) => {
   for (const node of nodes) {
@@ -68,8 +68,8 @@ const listenNewMedia = (e?: MutationEvent) => {
     nukeBillboard(checkProfile);
     return;
   }
-  const nodes = getQueryList([...regQueries, ...billBoardQueries]);
-  addTransitionEvts(nodes);
+  const elements = getQueryList([...regQueries, ...billBoardQueries]);
+  addTransitionEvts(elements);
 };
 listenNewMedia();
 document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
