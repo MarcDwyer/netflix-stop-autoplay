@@ -25,16 +25,12 @@ const debounce = (
     }, dur);
   };
 };
-type SetQueries = {
-  (): Element[];
-};
-const getQueryList = (queries: string[]): Element[] => {
+const getElements = (queries: string[]): Element[] => {
   const not = ":not([stopped=true])";
   const results: Element[] = [];
   for (const query of queries) {
     results.push(...document.querySelectorAll(query + not));
   }
-  console.log(results);
   return results;
 };
 const addTransitionEvts = (nodes: Element[]) => {
@@ -55,20 +51,13 @@ const nukeBillboard = (profileEle: Element) => {
   }
 };
 const listenNewMedia = (e?: MutationEvent) => {
-  if (
-    e &&
-    e.srcElement &&
-    //@ts-ignore
-    /image-rotator-image/g.test(e.srcElement.classList.value)
-  )
-    return;
   const { regQueries, billBoardQueries, profileScreen } = queries;
   const checkProfile = document.querySelector(profileScreen);
   if (checkProfile) {
     nukeBillboard(checkProfile);
     return;
   }
-  const elements = getQueryList([...regQueries, ...billBoardQueries]);
+  const elements = getElements([...regQueries, ...billBoardQueries]);
   addTransitionEvts(elements);
 };
 listenNewMedia();
