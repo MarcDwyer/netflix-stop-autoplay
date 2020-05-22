@@ -1,6 +1,6 @@
 const debounce = (
   func: Function,
-  dur: number
+  dur: number,
 ): EventListenerOrEventListenerObject => {
   let timer;
   return function () {
@@ -15,6 +15,7 @@ const debounce = (
 };
 
 class StopNetflix {
+  // These queries are elements that have auto-playing videos as children
   private queries = {
     billBoardQueries: ["div.billboard", "div.billboard-row"],
     regQueries: ["div.slider-item", "div[class*='video']", "div.background"],
@@ -25,6 +26,7 @@ class StopNetflix {
     if (typeof queries === "string") {
       queries = [queries];
     }
+    // An additional query that prevents us from selecting already tagged elements
     const not = ":not([stopped=true])";
     const results = [];
     for (const query of queries) {
@@ -32,26 +34,34 @@ class StopNetflix {
     }
     return results;
   }
+  // Tag elements with an attribute and eventListener
   private tagElement(
     eles: Element[],
     eventType: string,
-    func: (ele: Element) => void
+    func: (ele: Element) => void,
   ) {
     for (const ele of eles) {
       ele.addEventListener(eventType, () => func(ele));
       ele.setAttribute("stopped", "true");
     }
   }
+  // Sometimes when logging into Netflix you must choose which profile to select
+  // Need a special function to handle such a case.
+  private handleInit() {
+    const { profileScreen } = this.queries;
+    const checkPofile = this.getElements(profileScreen);
+    if (checkPofile && checkPofile.length) {
+      this.tagElement(
+        checkPofile,
+        "click",
+        () => setTimeout(() => this.scan(), 450),
+      );
+    }
+  }
   scan(init?: boolean) {
     if (init) {
-      const { profileScreen } = this.queries;
-      const checkPofile = this.getElements(profileScreen);
-      if (checkPofile && checkPofile.length) {
-        this.tagElement(checkPofile, "click", () =>
-          setTimeout(() => this.scan(), 450)
-        );
-        return;
-      }
+      this.handleInit();
+      return;
     }
     const { regQueries, billBoardQueries } = this.queries;
 
@@ -70,5 +80,5 @@ const stopNetflix = new StopNetflix();
 stopNetflix.scan(true);
 document.addEventListener(
   "DOMNodeInserted",
-  debounce(() => stopNetflix.scan(), 450)
+  debounce(() => stopNetflix.scan(), 450),
 );
