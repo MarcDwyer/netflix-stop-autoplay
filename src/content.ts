@@ -39,7 +39,6 @@ class StopNetflix {
     }
   }
   scan(init?: boolean) {
-    const { regQueries, billBoardQueries } = this.queries;
     if (init) {
       const { profileScreen } = this.queries;
       const checkPofile = this.getElements(profileScreen);
@@ -50,6 +49,8 @@ class StopNetflix {
         return;
       }
     }
+    const { regQueries, billBoardQueries } = this.queries;
+
     const tagThese = this.getElements([...regQueries, ...billBoardQueries]);
     this.tagElement(tagThese, "transitionstart", (ele: Element) => {
       const vid = ele.querySelector("video");
