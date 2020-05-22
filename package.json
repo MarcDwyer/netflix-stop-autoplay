@@ -9,9 +9,9 @@
     "zip": "node zipit"
   },
   "dependencies": {
-    "@types/adm-zip": "^0.4.32",
+    "@types/adm-zip": "^0.4.33",
     "adm-zip": "^0.4.13",
-    "typescript": "^3.5.3"
+    "typescript": "^3.9.3"
   },
   "repository": {
     "type": "git",

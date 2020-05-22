@@ -1,21 +1,9 @@
-const queries = {
-  billBoardQueries: ["div.billboard", "div.billboard-row"],
-  regQueries: [
-    "div.slider-item",
-    // "span.handle",
-    "div[class*='video']",
-    "div.background"
-  ],
-  profileScreen: "div.list-profiles",
-  profileCards: "div.profile-icon"
-};
-
 const debounce = (
   func: Function,
   dur: number
 ): EventListenerOrEventListenerObject => {
   let timer;
-  return function() {
+  return function () {
     const ctx = this,
       args = arguments;
 
@@ -25,40 +13,57 @@ const debounce = (
     }, dur);
   };
 };
-const getElements = (queries: string[]): Element[] => {
-  const not = ":not([stopped=true])";
-  const results: Element[] = [];
-  for (const query of queries) {
-    results.push(...document.querySelectorAll(query + not));
+
+class StopNetflix {
+  private queries = {
+    billBoardQueries: ["div.billboard", "div.billboard-row"],
+    regQueries: ["div.slider-item", "div[class*='video']", "div.background"],
+    profileScreen: "div.list-profiles",
+    profileCards: "div.profile-icon",
+  };
+  private getElements(queries: string | string[]): Element[] {
+    if (typeof queries === "string") {
+      queries = [queries];
+    }
+    const not = ":not([stopped=true])";
+    const results = [];
+    for (const query of queries) {
+      results.push(...document.querySelectorAll(query + not));
+    }
+    return results;
   }
-  return results;
-};
-const addTransitionEvts = (nodes: Element[]) => {
-  for (const node of nodes) {
-    node.setAttribute("stopped", "true");
-    node.addEventListener("transitionstart", () => {
-      const vid = node.querySelector("video");
+  private tagElement(eles: Element[], eventType: string, func: Function) {
+    for (const ele of eles) {
+      ele.addEventListener(eventType, () => func(ele));
+      ele.setAttribute("stopped", "true");
+    }
+  }
+  scan(init?: boolean) {
+    const { regQueries, billBoardQueries } = this.queries;
+    if (init) {
+      const { profileScreen } = this.queries;
+      const checkPofile = this.getElements(profileScreen);
+      if (checkPofile && checkPofile.length) {
+        this.tagElement(checkPofile, "click", () =>
+          setTimeout(() => this.scan(), 450)
+        );
+        return;
+      }
+    }
+    const tagThese = this.getElements([...regQueries, ...billBoardQueries]);
+    this.tagElement(tagThese, "transitionstart", (ele: Element) => {
+      const vid = ele.querySelector("video");
       if (vid) {
         vid.src = "";
       }
     });
   }
-};
-const nukeBillboard = (profileEle: Element) => {
-  const profileCards = profileEle.querySelectorAll(queries.profileCards);
-  for (const card of profileCards) {
-    card.addEventListener("click", () => setTimeout(listenNewMedia, 450));
-  }
-};
-const listenNewMedia = (e?: MutationEvent) => {
-  const { regQueries, billBoardQueries, profileScreen } = queries;
-  const checkProfile = document.querySelector(profileScreen);
-  if (checkProfile) {
-    nukeBillboard(checkProfile);
-    return;
-  }
-  const elements = getElements([...regQueries, ...billBoardQueries]);
-  addTransitionEvts(elements);
-};
-listenNewMedia();
-document.addEventListener("DOMNodeInserted", debounce(listenNewMedia, 450));
+}
+
+const stopNetflix = new StopNetflix();
+
+stopNetflix.scan(true);
+document.addEventListener(
+  "DOMNodeInserted",
+  debounce(() => stopNetflix.scan(), 450)
+);
