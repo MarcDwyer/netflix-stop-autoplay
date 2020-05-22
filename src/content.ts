@@ -32,7 +32,11 @@ class StopNetflix {
     }
     return results;
   }
-  private tagElement(eles: Element[], eventType: string, func: Function) {
+  private tagElement(
+    eles: Element[],
+    eventType: string,
+    func: (ele: Element) => void
+  ) {
     for (const ele of eles) {
       ele.addEventListener(eventType, () => func(ele));
       ele.setAttribute("stopped", "true");
