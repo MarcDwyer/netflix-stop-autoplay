@@ -1,18 +1,4 @@
-const debounce = (
-  func: Function,
-  dur: number,
-): EventListenerOrEventListenerObject => {
-  let timer;
-  return function () {
-    const ctx = this,
-      args = arguments;
-
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(ctx, args);
-    }, dur);
-  };
-};
+import { debounce } from "./util";
 
 class StopNetflix {
   // These queries are elements that have auto-playing videos as children
@@ -38,7 +24,7 @@ class StopNetflix {
   private tagElement(
     eles: Element[],
     eventType: string,
-    func: (ele: Element) => void,
+    func: (ele: Element) => void
   ) {
     for (const ele of eles) {
       ele.addEventListener(eventType, () => func(ele));
@@ -51,10 +37,8 @@ class StopNetflix {
     const { profileScreen } = this.queries;
     const checkPofile = this.getElements(profileScreen);
     if (checkPofile && checkPofile.length) {
-      this.tagElement(
-        checkPofile,
-        "click",
-        () => setTimeout(() => this.scan(), 450),
+      this.tagElement(checkPofile, "click", () =>
+        setTimeout(() => this.scan(), 450)
       );
     }
   }
@@ -80,5 +64,5 @@ const stopNetflix = new StopNetflix();
 stopNetflix.scan(true);
 document.addEventListener(
   "DOMNodeInserted",
-  debounce(() => stopNetflix.scan(), 450),
+  debounce(() => stopNetflix.scan(), 450)
 );

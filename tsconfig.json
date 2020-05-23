@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "amd",
     "esModuleInterop": true,
     "target": "es6",
     "noImplicitAny": false,
     "moduleResolution": "node",
     "sourceMap": true,
     "baseUrl": ".",
-    "outDir": "dist",
+    "rootDir": "./src/",
+    "outFile": "./dist/content.js",
     "paths": {
       "*": ["node_modules/*"]
     }
