@@ -23,6 +23,7 @@ const queries = {
   profileScreen: "div.list-profiles",
   profileCards: "div.profile-icon",
 };
+
 const getElements = (queries: string | string[]): Element[] => {
   if (typeof queries === "string") {
     queries = [queries];
