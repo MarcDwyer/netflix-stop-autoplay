@@ -47,25 +47,15 @@ const tagElement = (
     ele.setAttribute("stopped", "true");
   }
 };
-// Sometimes when logging into Netflix you must choose which profile to select
-// Need a special function to handle such a case.
-const handleInit = () => {
-  const { profileScreen } = queries;
+
+const scan = () => {
+  const { regQueries, billBoardQueries, profileScreen } = queries;
   const checkPofile = getElements(profileScreen);
   if (checkPofile && checkPofile.length) {
     tagElement(checkPofile, "click", () => setTimeout(scan, 450));
   }
-};
-
-const scan = (init?: boolean) => {
-  if (init) {
-    handleInit();
-    return;
-  }
-  const { regQueries, billBoardQueries } = queries;
 
   const tagThese = getElements([...regQueries, ...billBoardQueries]);
-
   tagElement(tagThese, "transitionstart", (ele: Element) => {
     const vid = ele.querySelector("video");
     if (vid) {
@@ -74,8 +64,5 @@ const scan = (init?: boolean) => {
   });
 };
 
-scan(true);
-document.addEventListener(
-  "DOMNodeInserted",
-  debounce(() => scan(), 450)
-);
+window.addEventListener("load", scan);
+document.addEventListener("DOMNodeInserted", debounce(scan, 450));
