@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/MarcDwyer/netflix-stop-autoplay#readme",
   "devDependencies": {
-    "bestzip": "^2.1.5"
+    "bestzip": "^2.1.7"
   },
   "icon": "icon.png"
 }
